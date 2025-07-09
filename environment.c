@@ -56,10 +56,6 @@ char *check_roundtrip_encoding;
 enum branch_track git_branch_track = BRANCH_TRACK_REMOTE;
 enum rebase_setup_type autorebase = AUTOREBASE_NEVER;
 enum push_default_type push_default = PUSH_DEFAULT_UNSPECIFIED;
-#ifndef OBJECT_CREATION_MODE
-#define OBJECT_CREATION_MODE OBJECT_CREATION_USES_HARDLINKS
-#endif
-enum object_creation_mode object_creation_mode = OBJECT_CREATION_MODE;
 int grafts_keep_true_parents;
 int core_apply_sparse_checkout;
 int core_sparse_checkout_cone;

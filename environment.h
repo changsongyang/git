@@ -179,12 +179,6 @@ enum push_default_type {
 };
 extern enum push_default_type push_default;
 
-enum object_creation_mode {
-	OBJECT_CREATION_USES_HARDLINKS = 0,
-	OBJECT_CREATION_USES_RENAMES = 1
-};
-extern enum object_creation_mode object_creation_mode;
-
 extern int grafts_keep_true_parents;
 
 extern int repository_format_precious_objects;

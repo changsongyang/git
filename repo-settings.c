@@ -189,6 +189,22 @@ void prepare_repo_settings(struct repository *r)
 		if (!pack_compression_seen)
 			r->settings.pack_compression_level = Z_DEFAULT_COMPRESSION;
 	}
+
+	if (!repo_config_get_string_tmp(r, "core.createobject", &strval)) {
+		if (!strval)
+			die(_("missing value for '%s'"), strval);
+		if (!strcmp(strval, "rename"))
+			r->settings.object_creation_mode = OBJECT_CREATION_USES_RENAMES;
+		else if (!strcmp(strval, "link"))
+			r->settings.object_creation_mode = OBJECT_CREATION_USES_HARDLINKS;
+		else
+			die(_("invalid mode for object creation: %s"), strval);
+	} else {
+#ifndef OBJECT_CREATION_MODE
+# define OBJECT_CREATION_MODE OBJECT_CREATION_USES_HARDLINKS
+#endif
+		r->settings.object_creation_mode = OBJECT_CREATION_MODE;
+	}
 }
 
 void repo_settings_clear(struct repository *r)
