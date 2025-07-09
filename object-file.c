@@ -7,8 +7,6 @@
  * creation etc.
  */
 
-#define USE_THE_REPOSITORY_VARIABLE
-
 #include "git-compat-util.h"
 #include "bulk-checkin.h"
 #include "convert.h"
