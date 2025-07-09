@@ -171,7 +171,8 @@ static int stream_blob_to_pack(struct bulk_checkin_packfile *state,
 	int write_object = (flags & INDEX_WRITE_OBJECT);
 	off_t offset = 0;
 
-	git_deflate_init(&s, pack_compression_level);
+	prepare_repo_settings(the_repository);
+	git_deflate_init(&s, the_repository->settings.pack_compression_level);
 
 	hdrlen = encode_in_pack_object_header(obuf, sizeof(obuf), OBJ_BLOB, size);
 	s.next_out = obuf + hdrlen;

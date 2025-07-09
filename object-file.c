@@ -769,7 +769,8 @@ static int start_loose_object_common(struct odb_source *source,
 	}
 
 	/*  Setup zlib stream for compression */
-	git_deflate_init(stream, zlib_compression_level);
+	prepare_repo_settings(source->odb->repo);
+	git_deflate_init(stream, source->odb->repo->settings.zlib_compression_level);
 	stream->next_out = buf;
 	stream->avail_out = buflen;
 	algo->init_fn(c);

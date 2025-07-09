@@ -379,7 +379,8 @@ static unsigned long do_compress(void **pptr, unsigned long size)
 	void *in, *out;
 	unsigned long maxsize;
 
-	git_deflate_init(&stream, pack_compression_level);
+	prepare_repo_settings(the_repository);
+	git_deflate_init(&stream, the_repository->settings.pack_compression_level);
 	maxsize = git_deflate_bound(&stream, size);
 
 	in = *pptr;
@@ -406,7 +407,8 @@ static unsigned long write_large_blob_data(struct git_istream *st, struct hashfi
 	unsigned char obuf[1024 * 16];
 	unsigned long olen = 0;
 
-	git_deflate_init(&stream, pack_compression_level);
+	prepare_repo_settings(the_repository);
+	git_deflate_init(&stream, the_repository->settings.pack_compression_level);
 
 	for (;;) {
 		ssize_t readlen;
@@ -4803,6 +4805,7 @@ int cmd_pack_objects(int argc,
 		     const char *prefix,
 		     struct repository *repo UNUSED)
 {
+	int compression_level = INT_MIN;
 	int use_internal_rev_list = 0;
 	int all_progress_implied = 0;
 	struct strvec rp = STRVEC_INIT;
@@ -4892,7 +4895,7 @@ int cmd_pack_objects(int argc,
 			 N_("ignore packs that have companion .keep file")),
 		OPT_STRING_LIST(0, "keep-pack", &keep_pack_list, N_("name"),
 				N_("ignore this pack")),
-		OPT_INTEGER(0, "compression", &pack_compression_level,
+		OPT_INTEGER(0, "compression", &compression_level,
 			    N_("pack compression level")),
 		OPT_BOOL(0, "keep-true-parents", &grafts_keep_true_parents,
 			 N_("do not hide commits by grafts")),
@@ -5046,10 +5049,14 @@ int cmd_pack_objects(int argc,
 
 	if (!reuse_object)
 		reuse_delta = 0;
-	if (pack_compression_level == -1)
-		pack_compression_level = Z_DEFAULT_COMPRESSION;
-	else if (pack_compression_level < 0 || pack_compression_level > Z_BEST_COMPRESSION)
-		die(_("bad pack compression level %d"), pack_compression_level);
+	if (compression_level != INT_MIN) {
+		if (compression_level == -1)
+			compression_level = Z_DEFAULT_COMPRESSION;
+		else if (compression_level < 0 || compression_level > Z_BEST_COMPRESSION)
+			die(_("bad pack compression level %d"), compression_level);
+		prepare_repo_settings(the_repository);
+		the_repository->settings.pack_compression_level = compression_level;
+	}
 
 	if (!delta_search_threads)	/* --threads=0 means autodetect */
 		delta_search_threads = online_cpus();
